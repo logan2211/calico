@@ -815,7 +815,6 @@ func validateAndExtractIPs(ipAddrs string, annotation string, logger *logrus.Ent
 		return nil, fmt.Errorf("annotation \"%s\" specified but empty", annotation)
 	}
 
-	var hasIPv4, hasIPv6 bool
 	var ipList []net.IP
 
 	// We need to make sure there is only one IPv4 and/or one IPv6
@@ -825,20 +824,6 @@ func validateAndExtractIPs(ipAddrs string, annotation string, logger *logrus.Ent
 		if ipAddr == nil {
 			logger.WithField("IP", ip).Error("Invalid IP format")
 			return nil, fmt.Errorf("invalid IP format: %s", ip)
-		}
-
-		if ipAddr.To4() != nil {
-			if hasIPv4 {
-				// Check if there is already has been an IPv4 in the list, as we only support one IPv4 and/or one IPv6 per interface for now.
-				return nil, fmt.Errorf("cannot have more than one IPv4 address for \"%s\" annotation", annotation)
-			}
-			hasIPv4 = true
-		} else {
-			if hasIPv6 {
-				// Check if there is already has been an IPv6 in the list, as we only support one IPv4 and/or one IPv6 per interface for now.
-				return nil, fmt.Errorf("cannot have more than one IPv6 address for \"%s\" annotation", annotation)
-			}
-			hasIPv6 = true
 		}
 
 		// Append the IP to ipList slice.
